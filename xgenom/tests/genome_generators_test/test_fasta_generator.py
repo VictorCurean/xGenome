@@ -1,5 +1,6 @@
 from unittest import TestCase
 from xgenom.genome_generators.fasta_generator import generate_string
+from xgenom.genome_generators.fasta_generator import generate_fasta_file
 
 class TestGenerate_string(TestCase):
     def test_generate_string(self):
@@ -19,3 +20,20 @@ class TestGenerate_string(TestCase):
 
         assert test_string2.find("X") == -1
         assert test_string2.find("Y") == -1
+
+        test_string3 = generate_string(["A", "C", "G", "T"], 1000000)
+        assert len(test_string3) == 1000000
+
+    def test_generate_fasta_file(self):
+        """
+        Unit test for fasta_generator.py/generate_fasta_file() function
+        """
+        filename = generate_fasta_file(None)
+        f = open("D:\\Licenta\\Git Repository\\xGenome\\xgenom\\data\\" + filename, "r")
+        content = f.read()
+        assert len(content) != 0
+
+
+
+
+

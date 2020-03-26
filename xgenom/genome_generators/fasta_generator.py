@@ -23,9 +23,31 @@ def generate_string(alphabet, size):
 
 
 def generate_fasta_file(path):
+    """
+    Function that generates a mock fasta file
+    :param path: the path where the file will be created
+                 if no path is given, it will use the default absolute path of the local project
+    :return: the name of the file
+    """
+    if path is None:
+        #This should be changed to suit your project structure
+        path = "D:\\Licenta\\Git Repository\\xGenome\\xgenom\\data"
+
     now = datetime.now()
-    filename = now.strftime("file_%d/%m/%Y_%H:%M:%S.fasta")
-    
+    filename = now.strftime("file_%d-%m-%Y_%H-%M-%S.fasta")
+    comment = ">" + filename + " mock genome generated randomly"
+
+
+    f = open(path + "\\" + filename, "w")
+    f.write(comment + "\n")
+    f.write(generate_string(["A", "C", "G", "T"], 100000))
+    f.close()
+
+    return filename
+
+
+
+
 
 
 
