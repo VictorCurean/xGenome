@@ -4,6 +4,7 @@ Function that computates the FIRST column function of the FM-Index
 
 import collections
 
+
 def get_char_count(input, alphabet):
     """
     Functions that returns an ordered dictionary, that holds the count for each character in an input string
@@ -20,6 +21,7 @@ def get_char_count(input, alphabet):
 
     return collections.OrderedDict(sorted(chars.items()))
 
+
 def get_first_function(dict):
     """
     Function that returns a dictionary corresponding to the FM-Index first column mapping of a character
@@ -33,17 +35,8 @@ def get_first_function(dict):
     prev_last_value = 0
 
     for k, value in dict.items():
-
         function_dict[k] = (prev_first_value, prev_last_value + value - 1)
         prev_first_value += value
         prev_last_value += value
 
     return function_dict
-
-
-
-
-
-
-
-
