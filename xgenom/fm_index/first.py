@@ -22,13 +22,14 @@ def get_char_count(input, alphabet):
     return collections.OrderedDict(sorted(chars.items()))
 
 
-def get_first_function(dict):
+def get_first_function(input, alphabet):
     """
     Function that returns a dictionary corresponding to the FM-Index first column mapping of a character
     The Function has the characters as keys, and the value is a tuple holding the first occurrence the last occurrence
     :param dict: the dictionary holding the character count of a string
     :return: the dictionary holding the intervals at which a character is located in the FIRST column of the FM-index
     """
+    dict = get_char_count(input, alphabet)
 
     function_dict = {}
     prev_first_value = 0

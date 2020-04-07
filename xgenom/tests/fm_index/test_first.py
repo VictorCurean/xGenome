@@ -27,8 +27,7 @@ class TestGet_char_count(TestCase):
         """
         Unit Test for the char count first.py/get_first_function() function
         """
-        dict_count = get_char_count("AAAAGTTCTCGGTA", ["G", "A", "C", "T"])
-        disct_fucntion = get_first_function(dict_count)
+        disct_fucntion = get_first_function("AAAAGTTCTCGGTA", ["G", "A", "C", "T"])
 
         assert disct_fucntion["$"] == (0, 0)
         assert disct_fucntion["A"] == (1, 5)
