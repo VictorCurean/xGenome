@@ -124,7 +124,7 @@ def resolve_offset(char_first_pos, first_func, bwt, tally, sa):
     return  sa[current_pos] + moves_made
 
 
-def exact_match_fm_index(reference, pattern, alphabet, suffix_array_step, tally_step):
+def exact_match_fm_index(reference, pattern, alphabet, bwt, first_func, sa, tally, suffix_array_step, tally_step):
     """
     Function that returns the positions where :param pattern matches the :param reference as a list
     The function will build the BW-transform and partial suffix array for :param reference,
@@ -138,10 +138,10 @@ def exact_match_fm_index(reference, pattern, alphabet, suffix_array_step, tally_
     :return: a list containing the positions where :param pattern matches the :param reference
     """
 
-    bwt = get_bwt(reference)
-    first_func = first(reference, alphabet)
-    sa = suffix_array(reference, suffix_array_step)
-    tally = get_tally(bwt, alphabet, tally_step)
+    # bwt = get_bwt(reference)
+    # first_func = first(reference, alphabet)
+    # sa = suffix_array(reference, suffix_array_step)
+    # tally = get_tally(bwt, alphabet, tally_step)
 
     pattern = ''.join(reversed(pattern))
 
@@ -149,26 +149,42 @@ def exact_match_fm_index(reference, pattern, alphabet, suffix_array_step, tally_
     start_character, pattern = pattern[0], pattern[1 : len(pattern)]
 
     #depth first search in the fm index:
-    for pos in range(first_func[start_character][0], first_func[start_character][1] + 1):
+    begin = first_func[start_character][0]
+    end = first_func[start_character][1] + 1
+    for pos in range(begin, end):
 
         pattern_copy = pattern
         current_pos = pos
         continue_matching = True
 
         while continue_matching:
-            if bwt[current_pos] == pattern_copy[0]:
-                next_char, pattern_copy = pattern_copy[0], pattern_copy[1 : len(pattern_copy)]
-                last_rank_tuple = get_LAST_rank(next_char, current_pos, tally, bwt)
-                current_pos = get_FIRST_pos_from_rank(next_char, last_rank_tuple[1], first_func)
+            #print(str(len(bwt)) + "........" + str(pos))
+            try:
+                if bwt[current_pos] == pattern_copy[0]:
+                    next_char, pattern_copy = pattern_copy[0], pattern_copy[1 : len(pattern_copy)]
+                    last_rank_tuple = get_LAST_rank(next_char, current_pos, tally, bwt)
 
-                #An exact match for the whole pattern has been found
-                if len(pattern_copy) == 0:
-                    matches_found.append(resolve_offset(current_pos, first_func, bwt, tally, sa))
+                    prev_pos = current_pos
+                    current_pos = get_FIRST_pos_from_rank(next_char, last_rank_tuple[1], first_func)
+
+                    # #avoiding infinite loop
+                    # if prev_pos == current_pos:
+                    #     continue_matching = False
+
+                    #An exact match for the whole pattern has been found
+                    if len(pattern_copy) == 0:
+                        matches_found.append(resolve_offset(current_pos, first_func, bwt, tally, sa))
+                        continue_matching = False
+
+                else:
                     continue_matching = False
-
-            else:
+            except(IndexError):
+                print(current_pos)
+                print("Index Error for " + str(pattern))
                 continue_matching = False
-
+            except(KeyError):
+                print("Key Error for " + str(pattern))
+                continue_matching = False
 
     return matches_found
 

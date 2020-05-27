@@ -40,7 +40,7 @@ def generate_fasta_file(path):
 
     f = open(path + "\\" + filename, "w")
     f.write(comment + "\n")
-    f.write(generate_string(["A", "C", "G", "T"], 100000))
+    f.write(generate_string(["A", "C", "G", "T"], 30))
     f.close()
 
     return filename

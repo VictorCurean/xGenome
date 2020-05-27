@@ -5,6 +5,8 @@ from xgenom.fm_index.fm_index_search import get_FIRST_nodes, get_LAST_rank
 from xgenom.fm_index.tally import get_tally
 from xgenom.fm_index.burrows_wheeler_transform import bwt as get_bwt
 from xgenom.fm_index.fm_index_search import exact_match_fm_index
+from xgenom.fm_index.first import get_first_function as first
+from xgenom.fm_index.suffix_array import suffix_array
 
 
 class TestGet_first_nodes(TestCase):
@@ -46,14 +48,25 @@ class TestGet_first_nodes(TestCase):
 
 
     def test_exact_match_fm_index(self):
-        print(sorted(["M", "I", "S", "P", "$"]))
+        reference = "BANANA$"
+        alphabet = ["A", "B", "N", "$"]
+        suffix_array_step = 5
+        tally_step = 5
 
-        assert sorted(exact_match_fm_index("BANANA$", "NA", ["A", "B", "N", "$"], 2, 5)) == [2, 4]
-        assert sorted(exact_match_fm_index("BANANA$", "ANA", ["A", "B", "N", "$"], 5, 5)) == [1, 3]
-        assert sorted(exact_match_fm_index("BANANA$", "BANA", ["A", "B", "N", "$"], 2, 2)) == [0]
+        bwt = get_bwt(reference)
+        first_func = first(reference, alphabet)
+        sa = suffix_array(reference, suffix_array_step)
+        tally = get_tally(bwt, alphabet, tally_step)
 
-        assert sorted(exact_match_fm_index("MISSISSIPPI$", "SSI", ['S', 'I', 'M', 'P', '$'], 3, 4)) == [2, 5]
-        assert sorted(exact_match_fm_index("AAAAAAAAAAABBBAAAAAAA$", "BBB", ["A", "B", "$"], 2, 4) ) == [11]
+
+
+        assert sorted(exact_match_fm_index("BANANA$", "NA", ["A", "B", "N", "$"], bwt, first_func, sa, tally, suffix_array_step, tally_step)) == [2, 4]
+        assert sorted(exact_match_fm_index("BANANA$", "ANA", ["A", "B", "N", "$"], bwt, first_func, sa, tally, suffix_array_step, tally_step)) == [1, 3]
+        assert sorted(exact_match_fm_index("BANANA$", "BANA", ["A", "B", "N", "$"], bwt, first_func, sa, tally, suffix_array_step, tally_step)) == [0]
+        assert sorted(exact_match_fm_index("BANANA$", "NAAAA", ["A", "B", "N", "$"], bwt, first_func, sa, tally, suffix_array_step, tally_step)) == []
+
+        # assert sorted(exact_match_fm_index("MISSISSIPPI$", "SSI", ['S', 'I', 'M', 'P', '$'], 3, 4)) == [2, 5]
+        # assert sorted(exact_match_fm_index("AAAAAAAAAAABBBAAAAAAA$", "BBB", ["A", "B", "$"], 2, 4) ) == [11]
 
 
 

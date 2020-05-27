@@ -40,4 +40,8 @@ def get_first_function(input, alphabet):
         prev_first_value += value
         prev_last_value += value
 
+    # #TODO change it in algorithm
+    # newtuple = (function_dict["T"][0], function_dict["T"][1] - 1)
+    # function_dict["T"] = newtuple
+
     return function_dict

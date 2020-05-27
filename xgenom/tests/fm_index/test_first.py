@@ -29,6 +29,8 @@ class TestGet_char_count(TestCase):
         """
         disct_fucntion = get_first_function("AAAAGTTCTCGGTA", ["G", "A", "C", "T"])
 
+        print (len("AAAAGTTCTCGGTA"))
+
         assert disct_fucntion["$"] == (0, 0)
         assert disct_fucntion["A"] == (1, 5)
         assert disct_fucntion["C"] == (6, 7)
