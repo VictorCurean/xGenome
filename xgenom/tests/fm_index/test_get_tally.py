@@ -4,7 +4,7 @@ from xgenom.fm_index.tally import get_tally
 
 class TestGet_tally(TestCase):
     def test_get_tally(self):
-        input = ["a", "b", "c", "d", "a", "b", "c", "d", "a", "b", "c", "d"]
+        input = ["a", "b", "c", "d", "a", "b", "c", "d", "a", "b", "c", "d", "$"]
         alphabet = ["a", "b", "c", "d"]
         step = 4
 
