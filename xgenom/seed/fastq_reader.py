@@ -6,7 +6,7 @@ from xgenom.seed.Read import FASTQRead
 def read_from_file(file):
     f = open(file, "r")
     reads = []
-    counter = 0;
+    counter = 0
 
     while(True):
         #reading the lines
@@ -17,9 +17,9 @@ def read_from_file(file):
 
         #logging the process
         counter += 1
-        if counter % 1000 == 0:
-            print(str(counter) + " reads processed")
-            print("current read ....... " + read_id)
+        # if counter % 1000 == 0:
+        #     print(str(counter) + " reads processed")
+        #     print("current read ....... " + read_id)
 
         #ensuring the while loop is not infinite
         if read_id == "":

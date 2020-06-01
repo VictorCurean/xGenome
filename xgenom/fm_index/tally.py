@@ -1,6 +1,7 @@
 """
 Functions for the tally construct of the FM-index
 """
+from numba import jit
 
 
 def get_tally(bwt, alphabet, step):

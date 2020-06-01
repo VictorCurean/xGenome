@@ -1,6 +1,8 @@
 """
 Function that computates the suffix array of a string, with gaps in respect to input
 """
+from numba import jit
+
 
 def suffix_array(input, step):
     """

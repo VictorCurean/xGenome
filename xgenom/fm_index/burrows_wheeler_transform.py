@@ -2,7 +2,6 @@
 Functions to generate the Burrows-Wheeler Transform of a string
 """
 
-
 def bwt(input):
     """
     Function that returns the Burrows Wheeler Transform of an input string

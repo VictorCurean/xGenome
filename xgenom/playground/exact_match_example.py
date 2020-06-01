@@ -4,38 +4,77 @@ from xgenom.fm_index.burrows_wheeler_transform import bwt as get_bwt
 from xgenom.fm_index.suffix_array import suffix_array
 from xgenom.fm_index.tally import get_tally
 from xgenom.fm_index.first import get_first_function as first
+from timeit import default_timer as timer
 
-# def bwt2(s):
-#     """Apply Burrows-Wheeler transform to input string."""
-#     assert "\002" not in s and "\003" not in s, "Input string cannot contain STX and ETX characters"
-#     s = "\002" + s + "\003"  # Add start and end of text marker
-#     table = sorted(s[i:] + s[:i] for i in range(len(s)))  # Table of rotations of string
-#     last_column = [row[-1:] for row in table]  # Last characters of each row
-#     return "".join(last_column)  # Convert list of characters into string
 
+#____________files________________
 # fasta = "D:\Licenta\Data\CGA009.fasta"
-
 fasta = "D:\\Licenta\\Git Repository\\xGenome\\xgenom\\data\\file_27-05-2020_21-12-14.fasta"
 
+
+#____________reading files_________
+start = timer()
+
+print(".....reading files....................")
 f = open(fasta, "r")
 descrpt = f.readline()
 ref = f.read()
 ref += "$"
 alphabet = ["A", "C", "G", "T", "$"]
 
+#########TIMER###########
+duration = timer() - start
+duration_str = "{:.2f}".format(duration)
+print("Finished in " + duration_str + " seconds...")
+#########################
+
+
 print(".....building the data structures.....")
 print("______________________________________")
 print(".....building the BWT.................")
 bwt = get_bwt(ref)
-# bwt = bwt2(ref)
+
+#########TIMER###########
+duration = timer() - start
+duration_str = "{:.2f}".format(duration)
+print("Finished in " + duration_str + " seconds...")
+#########################
+
 print(".....building the Suffix Array........")
 sa = suffix_array(ref, 10)
+
+#########TIMER###########
+duration = timer() - start
+duration_str = "{:.2f}".format(duration)
+print("Finished in " + duration_str + " seconds...")
+#########################
+
 print(".....building the Tally...............")
 tally = get_tally(bwt, ["A", "C", "G", "T", "$"], 10)
+
+#########TIMER###########
+duration = timer() - start
+duration_str = "{:.2f}".format(duration)
+print("Finished in " + duration_str + " seconds...")
+#########################
+
 print(".....building the First Function......")
 first_func = first(ref, ["A", "C", "G", "T", "$"])
 
+#########TIMER###########
+duration = timer() - start
+duration_str = "{:.2f}".format(duration)
+print("Finished in " + duration_str + " seconds...")
+#########################
+
+print(".....reading fastq reads..............")
 reads = fastq_reader.read_from_file("D:\Licenta\Data\\example.fastq")
+
+#########TIMER###########
+duration = timer() - start
+duration_str = "{:.2f}".format(duration)
+print("Finished in " + duration_str + " seconds...")
+#########################
 
 print("........initiating matching routine for reads.........")
 counter = 0
@@ -48,9 +87,14 @@ for r in reads:
         res_tuple = (r.read_id, positions_found)
         exact_matches.append(res_tuple)
 
-    print(counter)
     if counter % 100 == 0:
         print(str(counter) + " reads processed with " + str(len(exact_matches)) + "exact matches found")
+
+        #########TIMER###########
+        duration = timer() - start
+        duration_str = "{:.2f}".format(duration)
+        print("Finished in " + duration_str + " seconds...")
+        #########################
 
 
 print("........showing results........")

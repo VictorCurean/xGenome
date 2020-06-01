@@ -7,6 +7,7 @@ from xgenom.fm_index.tally import get_tally
 from xgenom.fm_index.first import get_first_function as first
 from xgenom.fm_index.search_tree import SearchTree, Node
 from skbio import local_pairwise_align_ssw
+from numba import jit
 
 
 
@@ -76,7 +77,6 @@ def get_LAST_rank(character, absolute_position, tally, bwt):
 
     return (character, char_rank)
 
-
 def get_last_values(searched_character, prev_nodes, bwt, tally):
     """
     Function that returns the next matching values
@@ -92,6 +92,7 @@ def get_last_values(searched_character, prev_nodes, bwt, tally):
             bwt_values.append(get_LAST_rank(searched_character, node.first_position, tally, bwt))
 
     return bwt_values
+
 
 def get_FIRST_pos_from_rank(character, rank, first_func):
     """
