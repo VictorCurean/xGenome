@@ -28,5 +28,7 @@ def register_blueprints(app):
     # Since the application instance is now created, register each Blueprint
     # with the Flask application instance (app)
     from xgenom.flaskserver.recipes import recipes_blueprint
+    from xgenom.flaskserver.auth.blueprint_auth import authentication
 
     app.register_blueprint(recipes_blueprint)
+    app.register_blueprint(authentication, url_prefix="/api/auth")
