@@ -7,5 +7,4 @@ db = mysql.connector.connect(
   database="xgenome"
 )
 
-cursor = db.cursor()
 

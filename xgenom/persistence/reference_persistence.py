@@ -2,8 +2,8 @@
 Python file that contains the functions for persisting a genome reference and the additional data structures
 such as the BWT of the reference, the Suffix Array and the First Function, in order to have the FM Index
 """
-
-from xgenom.persistence.db import db, cursor
+import MySQLdb._exceptions
+from xgenom.persistence.db import db
 
 def persist_reference_meta(name, date, specimen):
     """
@@ -18,29 +18,53 @@ def persist_reference_meta(name, date, specimen):
     :param specimen: the specimen of the reference - optional in the database
     :return: the id of the inserted record
     """
-    sql = "INSERT INTO refmetainfs (name, date, specimen) VALUES (%s, %s, %s)"
-    val = (name, date, specimen)
-    cursor.execute(sql, val)
-    db.commit()
-    return cursor.lastrowid
+    try:
+        cursor = db.cursor()
+        sql = "INSERT INTO refmetainfs (name, date, specimen) VALUES (%s, %s, %s)"
+        val = (name, date, specimen)
+        cursor.execute(sql, val)
+        db.commit()
+        rowid = cursor.lastrowid
+        cursor.close()
+        return rowid
+    except MySQLdb._exceptions.Error:
+        return False
 
 def persist_reference(id, reference):
-    sql = "INSERT INTO refs (idRef, refcontent) VALUES (%s, %s)"
-    val = (id, reference)
-    cursor.execute(sql, val)
-    db.commit()
+    try:
+        cursor = db.cursor()
+        sql = "INSERT INTO refs (idRef, refcontent) VALUES (%s, %s)"
+        val = (id, reference)
+        cursor.execute(sql, val)
+        db.commit()
+        cursor.close()
+        return True
+    except MySQLdb._exceptions.Error:
+        return False
 
 def persist_bwt(id, bwt):
-    sql = "INSERT INTO bwts (idRef, bwtcontent) VALUES (%s, %s)"
-    val = (id, bwt)
-    cursor.execute(sql, val)
-    db.commit()
+    try:
+        cursor = db.cursor()
+        sql = "INSERT INTO bwts (idRef, bwtcontent) VALUES (%s, %s)"
+        val = (id, bwt)
+        cursor.execute(sql, val)
+        db.commit()
+        cursor.close()
+        return True
+    except MySQLdb._exceptions.Error:
+        return False
 
 def persist_sa(id, sa):
-    sql = "INSERT INTO suffixarrays (idRef, suffixarraycontent) VALUES (%s, %s)"
-    val = (id, sa)
-    cursor.execute(sql, val)
-    db.commit()
+    try:
+        cursor = db.cursor()
+        sql = "INSERT INTO suffixarrays (idRef, suffixarraycontent) VALUES (%s, %s)"
+        val = (id, sa)
+        cursor.execute(sql, val)
+        db.commit()
+        cursor.close()
+        return True
+    except MySQLdb._exceptions.Error:
+        return False
 
 
 

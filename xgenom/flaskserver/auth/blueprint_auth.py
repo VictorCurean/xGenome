@@ -1,5 +1,5 @@
 from flask import Blueprint, request, Response, jsonify
-from xgenom.flaskserver.utils.utils import generate_salt, generate_hash, validate_user_input, db_write, validate_user
+from xgenom.flaskserver.utils.utils import generate_salt, generate_hash, validate_user_input, db_write, validate_user, persist_token
 
 authentication = Blueprint("authentication", __name__)
 
@@ -44,6 +44,8 @@ def login_user():
     user_token = validate_user(username, user_password)
 
     if user_token:
+        persist_token(username, user_token)
         return jsonify({"jwt_token": user_token})
+
     else:
         Response(status=401)

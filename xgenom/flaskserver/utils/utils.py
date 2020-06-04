@@ -1,6 +1,6 @@
 import os
 from hashlib import pbkdf2_hmac
-from xgenom.persistence.db import db, cursor
+from xgenom.persistence.db import db
 import MySQLdb._exceptions
 import jwt
 
@@ -27,6 +27,7 @@ def generate_hash(plain_password, password_salt):
 
 def db_write(query, params):
     try:
+        cursor = db.cursor()
         cursor.execute(query, params)
         db.commit()
         cursor.close()
@@ -38,6 +39,7 @@ def db_write(query, params):
         return False
 
 def db_read(query, params=None):
+    cursor = db.cursor()
     if params:
         cursor.execute(query, params)
     else:
@@ -64,12 +66,12 @@ def validate_user(username, password):
     current_user = db_read("""SELECT * FROM users_auth WHERE username = %s""", (username,))
 
     if len(current_user) == 1:
-        saved_password_hash = current_user[0]["password_hash"]
-        saved_password_salt = current_user[0]["password_salt"]
+        saved_password_hash = current_user[0][3]
+        saved_password_salt = current_user[0][2]
         password_hash = generate_hash(password, saved_password_salt)
 
         if password_hash == saved_password_hash:
-            user_id = current_user[0]["id"]
+            user_id = current_user[0][0]
             jwt_token = generate_jwt_token({"id": user_id})
             return jwt_token
         else:
@@ -77,4 +79,12 @@ def validate_user(username, password):
 
     else:
         return False
+
+def persist_token(username, jwt):
+    cursor = db.cursor()
+    sql = "UPDATE users_auth SET token = %s WHERE username = %s"
+    val = (jwt, username)
+    cursor.execute(sql, val)
+    db.commit()
+    cursor.close()
 
