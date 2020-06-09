@@ -30,5 +30,5 @@ def register_blueprints(app):
     from xgenom.flaskserver.recipes import recipes_blueprint
     from xgenom.flaskserver.auth.blueprint_auth import authentication
 
-    app.register_blueprint(recipes_blueprint)
+    app.register_blueprint(recipes_blueprint, url_prefix="/api")
     app.register_blueprint(authentication, url_prefix="/api/auth")

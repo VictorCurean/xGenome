@@ -48,4 +48,4 @@ def login_user():
         return jsonify({"jwt_token": user_token})
 
     else:
-        Response(status=401)
+        return Response(status=401)

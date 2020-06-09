@@ -2,6 +2,10 @@ from flask import make_response, jsonify, request, Response, render_template
 import requests
 from . import recipes_blueprint
 from flask import url_for
+from werkzeug.utils import secure_filename
+import os
+
+from xgenom.persistence.utils import store_fasta
 
 @recipes_blueprint.route('/')
 def index():
@@ -18,125 +22,33 @@ def not_found(error=None):
 
     return resp
 
-@recipes_blueprint.route('/flaskserver-ping-endpoint', methods=['POST'])
-def processPing():
-    """
-    REST Endpoint for testing connection between Java and Flask Server. The request from Java Server processed and
-    compared with other data retrieved by the Flask Server
-    :return: Ping successful or not conflict
-    :raises: error message
-    """
+@recipes_blueprint.route('/upload-fasta', methods=['POST'])
+def upload_fasta():
+    def allowed_file(filename):
+        return '.' in filename and \
+               filename.rsplit('.', 1)[1].lower() in ["fasta"]
 
-    def retrievePingMockData():
-        """
-        Function that calls and retrieves data from Java Server
-        :return: returns response data as JSON
-        """
-        response = requests.get('http://127.0.0.1:8080/xtraffic-server/xtraffic-api/flaskresource/get-mock-data')
-        print("Retrieved: ")
-        print(response.json())
-        return response.json()
+    a = request
+    print(a.values)
 
-    print("PING REQUEST FROM JAVA SERVER:\n")
-    print(request.get_json())
-    try:
-        received_data = request.get_json()
-        retrieved_data = retrievePingMockData()
+    if request.method == 'POST':
+        # check if the post request has the file part
+        if 'file' not in request.files:
+            print('No file part')
 
-        if received_data.get('teamname') == retrieved_data.get('teamname'):
-            ok_response = {'message': 'true', 'code': 'SUCCESS'}
-            print("PING REQUEST SUCCESFULL")
-            return make_response(jsonify(ok_response), 200)
+        file = request.files['file']
 
-        else:
-            bad_response = {'message': 'false', 'code': 'CONFLICT'}
-            print("PING REQUEST UNSUCCESFULL")
-            return make_response(jsonify(bad_response), 409)
+        # if user does not select file, browser also
+        # submit an empty part without filename
+        if file.filename == '':
+            print('No selected file')
 
-    except Exception as e:
-        print(e)
+        if file and allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            file.save(os.path.join("D:\Licenta\Git Repository\\xGenome\\xgenom\\temp_data", filename))
 
+            store_fasta(filename, "victor", None, "human")
+            os.remove("D:\Licenta\Git Repository\\xGenome\\xgenom\\temp_data\\" + filename)
 
-# def retrievePingMockData():
-#     """
-#     Function that calls and retrieves data from Java Server
-#     :return: returns response data as JSON
-#     """
-#     response = requests.get('http://127.0.0.1:8080/xtraffic-server/xtraffic-api/flaskresource/get-mock-data')
-#     print("Retrieved: ")
-#     print(response.json())
-#     return response.json()
-
-@recipes_blueprint.route('/prediction-request', methods=['POST'])
-def process_request():
-    print("PROCESS REQUEST FROM JAVA SERVER:\n")
-    request_json = request.get_json()
-    request_id = request_json.get("requestId")
-    client_id = request_json.get("clientId")
-    data = request_json.get("data")
-    meta_data = request_json.get("metadata")
-
-    new_request = Request(request_id, client_id, data, meta_data)
-    return make_response(jsonify(new_request.serialize()), 200)
-
-@recipes_blueprint.route('/check-request-status/<request_id>', methods=['GET'])
-def get_request_status(request_id):
-    request_entity = get_request_by_id(request_id)
-    mock_response = {}
-    mock_response['requestId'] = request_id
-    mock_response['clientId'] = "mock client id"
-    mock_response['status'] = "mock status"
-
-    response = {}
-    response['requestId'] = request_entity.request_id
-    response['clientId'] = request_entity.client_id
-    response['status'] = request_entity.request_status
-
-    json_data = json.dumps(response)
-
-
-
-    return make_response(json_data, 200)
-
-@recipes_blueprint.route('/test-celery', methods=['GET'])
-def test_celery():
-    response = {}
-    response['status'] = celery_wrappers.test_bg_job()
-    json_response = json.dumps(response)
-    return make_response(json_response, 200)
-
-
-@recipes_blueprint.route('/test-celery-complex', methods=['GET'])
-def longtask():
-    print("TEST CELERY COMPLEX")
-    task = celery_wrappers.test_complex_bg_job.apply_async(thread=False)
-    return jsonify({'taskid':task.id}), 202, {'Location': url_for('recipes.taskstatus',
-                                                  task_id=task.id)}
-
-
-@recipes_blueprint.route('/status/<task_id>')
-def taskstatus(task_id):
-    task = celery_wrappers.test_complex_bg_job.AsyncResult(task_id)
-    if task.state == 'PENDING':
-        # job did not start yet
-        response = {
-            'state': task.state,
-            'current': 0,
-            'status': 'Pending...'
-        }
-    elif task.state != 'FAILURE':
-        response = {
-            'state': task.state,
-            'current': task.info.get('current', 0),
-            'status': task.info.get('status', '')
-        }
-        if 'result' in task.info:
-            response['result'] = task.info['result']
-    else:
-        # something went wrong in the background job
-        response = {
-            'state': task.state,
-            'current': 1,
-            'status': str(task.info),  # this is the exception raised
-        }
-    return jsonify(response)
+            print('File saved')
+            return Response(status=200)

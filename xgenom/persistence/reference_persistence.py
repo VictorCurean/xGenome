@@ -4,6 +4,7 @@ such as the BWT of the reference, the Suffix Array and the First Function, in or
 """
 import MySQLdb._exceptions
 from xgenom.persistence.db import db
+import pickle
 
 def persist_reference_meta(name, date, specimen):
     """
@@ -32,9 +33,11 @@ def persist_reference_meta(name, date, specimen):
 
 def persist_reference(id, reference):
     try:
+        pdata = pickle.dumps(reference, pickle.HIGHEST_PROTOCOL)
+
         cursor = db.cursor()
         sql = "INSERT INTO refs (idRef, refcontent) VALUES (%s, %s)"
-        val = (id, reference)
+        val = (id, pdata)
         cursor.execute(sql, val)
         db.commit()
         cursor.close()
@@ -44,9 +47,10 @@ def persist_reference(id, reference):
 
 def persist_bwt(id, bwt):
     try:
+        pdata = pickle.dumps(bwt, pickle.HIGHEST_PROTOCOL)
         cursor = db.cursor()
         sql = "INSERT INTO bwts (idRef, bwtcontent) VALUES (%s, %s)"
-        val = (id, bwt)
+        val = (id, pdata)
         cursor.execute(sql, val)
         db.commit()
         cursor.close()
@@ -56,9 +60,10 @@ def persist_bwt(id, bwt):
 
 def persist_sa(id, sa):
     try:
+        pdata = pickle.dumps(sa, pickle.HIGHEST_PROTOCOL)
         cursor = db.cursor()
         sql = "INSERT INTO suffixarrays (idRef, suffixarraycontent) VALUES (%s, %s)"
-        val = (id, sa)
+        val = (id, pdata)
         cursor.execute(sql, val)
         db.commit()
         cursor.close()
